@@ -36,10 +36,8 @@ st.title("🏠 House Price Prediction App")
 st.write("Enter house details to predict price")
 
 # 🔹 Load trained model
-model_path = os.path.join(os.path.dirname(__file__), "Ridge.pkl")
-
+model_path = os.path.join(os.path.dirname(__file__), "model", "Ridge.pkl")
 model = pickle.load(open(model_path, "rb"))
-
 # ---------------- INPUT FIELDS ---------------- #
 
 select_area = st.selectbox('Select the area',sorted(area))
