@@ -6,12 +6,4 @@ scikit-learn
 scipy
 joblib
 xgboost
-=======
-streamlit
-pandas
-numpy
-scikit-learn
-scipy
-joblib
-xgboost
 >>>>>>> 6fcdf9ceb79a61f410981678e82a800e880804b9
