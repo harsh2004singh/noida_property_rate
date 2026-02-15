@@ -31,24 +31,22 @@ area = [
 ]
 
 # ---------------- LOAD MODEL SAFELY ---------------- #
+import urllib.request
+
+MODEL_URL = "PASTE_YOUR_RELEASE_LINK_HERE"
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "Ridge.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "Ridge.pkl")
 
-st.write("🔍 Looking for model at:", MODEL_PATH)
+# Download model if not present
+if not os.path.exists(MODEL_PATH):
+    st.warning("Downloading model... please wait ⏳")
+    urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+    st.success("Model downloaded!")
 
-if not os.path.isfile(MODEL_PATH):
-    st.error("🚨 Model file NOT FOUND")
-    st.info("Upload this file to GitHub → model/Ridge.pkl")
-    st.stop()
-
-try:
-    with open(MODEL_PATH, "rb") as file:
-        model = pickle.load(file)
-    st.success("✅ Model Loaded Successfully")
-except Exception as e:
-    st.error("❌ Model exists but failed to load")
-    st.code(str(e))
-    st.stop()
+# Load model
+with open(MODEL_PATH, "rb") as file:
+    model = pickle.load(file)
 
 # ---------------- INPUT FIELDS ---------------- #
 st.header("Enter Property Details")
