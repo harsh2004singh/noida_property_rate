@@ -1,10 +1,12 @@
 import streamlit as st
 import pickle
+import traceback
 import numpy as np
 import pandas as pd
 import os
-
+import requests
 from sklearn.linear_model import Ridge
+
 
 area =['extension, noida, noida', 'other', 'sector 100, noida',
        'sector 101, noida', 'sector 102, noida', 'sector 104, noida',
@@ -29,36 +31,36 @@ area =['extension, noida, noida', 'other', 'sector 100, noida',
        'sector 93b, noida', 'sector 94, noida',
        'yamuna expressway, noida, noida']
 
-st.set_page_config(page_title="House Price Predictor", page_icon="🏠")
-
-st.title("🏠 House Price Prediction App")
-
-st.write("Enter house details to predict price")
-
-# 🔹 Load trained model
 model_path = os.path.join(os.path.dirname(__file__), "model", "Ridge.pkl")
-model = pickle.load(open(model_path, "rb"))
+
+if not os.path.exists(model_path):
+    st.error("❌ Model file not found!")
+    st.info(f"Looking for: `{model_path}`\n\n"
+            "Make sure `model/Ridge.pkl` exists in your GitHub repo.")
+    st.stop()
+
+try:
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+    st.success("✅ Model loaded successfully")
+except Exception as e:
+    st.error("Failed to load model")
+    st.text(traceback.format_exc())
+    st.stop()
 # ---------------- INPUT FIELDS ---------------- #
 
-select_area = st.selectbox('Select the area',sorted(area))
-
+selected_area = st.selectbox('Select the area', sorted(area))
 
 sqft = st.number_input("Square Feet", min_value=200, max_value=20000, step=50)
 bhk = st.number_input("BHK", min_value=1, max_value=10, step=1)
 bathroom = st.number_input("Bathrooms", min_value=1, max_value=10, step=1)
 
-# ---------------- PREDICT BUTTON ---------------- #
-
+# ---------------- PREDICT ---------------- #
 if st.button("Predict Price 💰"):
-
-    area = str(area)   # ⭐ VERY IMPORTANT FIX
-
     input_df = pd.DataFrame(
-        [[sqft, bathroom, bhk, area]],
-        columns=['size','bathrooms','bedroom','address']
+        [[sqft, bathroom, bhk, selected_area]],
+        columns=['size', 'bathrooms', 'bedroom', 'address']
     )
-
+    
     prediction = model.predict(input_df)[0]
-    st.success(f"🏡 Estimated House Price: ₹ {round(prediction,2)} Lakh")
-
-
+    st.success(f"🏡 Estimated House Price: **₹ {round(prediction, 2)} Lakh**")
