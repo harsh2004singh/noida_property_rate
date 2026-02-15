@@ -33,7 +33,7 @@ area = [
 # ---------------- LOAD MODEL SAFELY ---------------- #
 import urllib.request
 
-MODEL_URL = "PASTE_YOUR_RELEASE_LINK_HERE"
+MODEL_URL = "https://github.com/Harsh2004Singh/noida_property_rate/releases/download/v1/Ridge.pkl"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "Ridge.pkl")
@@ -47,7 +47,6 @@ if not os.path.exists(MODEL_PATH):
 # Load model
 with open(MODEL_PATH, "rb") as file:
     model = pickle.load(file)
-
 # ---------------- INPUT FIELDS ---------------- #
 st.header("Enter Property Details")
 
