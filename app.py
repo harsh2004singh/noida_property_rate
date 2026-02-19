@@ -36,7 +36,7 @@ st.title("🏠 House Price Prediction App")
 st.write("Enter house details to predict price")
 
 # 🔹 Load trained model
-model_path = os.path.join(os.path.dirname(__file__), "Ridge.pkl")
+model_path = os.path.join(os.path.dirname(__file__), "ridge.pkl")
 
 model = pickle.load(open(model_path, "rb"))
 
