@@ -51,15 +51,17 @@ bathroom = st.number_input("Bathrooms", min_value=1, max_value=10, step=1)
 
 # ---------------- PREDICT BUTTON ---------------- #
 
+# ---------------- PREDICT BUTTON ---------------- #
+
 if st.button("Predict Price 💰"):
 
-    area = str(area)   # ⭐ VERY IMPORTANT FIX
-
     input_df = pd.DataFrame({
-    "size": [size],
-    "bathrooms": [bathrooms],
-    "bedroom": [bedroom],
-    "address": [address]})
+        "size": [sqft],                 # sqft → size
+        "bathrooms": [bathroom],        # bathroom → bathrooms
+        "bedroom": [bhk],               # bhk → bedroom
+        "address": [select_area]        # select_area → address
+    })
 
     prediction = model.predict(input_df)[0]
+
     st.success(f"🏡 Estimated House Price: ₹ {round(prediction,2)} Lakh")
