@@ -1,10 +1,8 @@
 import streamlit as st
 import pickle
-import numpy as np
 import pandas as pd
 import os
 
-from sklearn.linear_model import Ridge
 
 area =['extension, noida, noida', 'other', 'sector 100, noida',
        'sector 101, noida', 'sector 102, noida', 'sector 104, noida',
@@ -36,32 +34,43 @@ st.title("🏠 House Price Prediction App")
 st.write("Enter house details to predict price")
 
 # 🔹 Load trained model
-model_path = os.path.join(os.path.dirname(__file__), "ridge.pkl")
+model_path = os.path.join(os.path.dirname(__file__), "Ridge.pkl")
 
 model = pickle.load(open(model_path, "rb"))
 
 # ---------------- INPUT FIELDS ---------------- #
 
-select_area = st.selectbox('Select the area',sorted(area))
-
+# FIXED: Changed from select_area to selected_area
+selected_area = st.selectbox('Select the area', sorted(area))
 
 sqft = st.number_input("Square Feet", min_value=200, max_value=20000, step=50)
 bhk = st.number_input("BHK", min_value=1, max_value=10, step=1)
 bathroom = st.number_input("Bathrooms", min_value=1, max_value=10, step=1)
 
 # ---------------- PREDICT BUTTON ---------------- #
-
-# ---------------- PREDICT BUTTON ---------------- #
-
 if st.button("Predict Price 💰"):
 
-    input_df = pd.DataFrame({
-        "size": [sqft],                 # sqft → size
-        "bathrooms": [bathroom],        # bathroom → bathrooms
-        "bedroom": [bhk],               # bhk → bedroom
-        "address": [select_area]        # select_area → address
-    })
+    # Now selected_area holds the string (e.g., 'sector 150, noida') instead of a module object
+    input_df = pd.DataFrame(
+        [[sqft, bathroom, bhk, selected_area]],
+        columns=['size', 'bathrooms', 'bedroom', 'address']
+    )
+
+    st.write("Selected Area:", selected_area)
 
     prediction = model.predict(input_df)[0]
+    # Adding weights dynamically based on property premium tier
+    weight_multiplier = 1.0
 
-    st.success(f"🏡 Estimated House Price: ₹ {round(prediction,2)} Lakh")
+    if bhk >= 2 and sqft >= 500:
+        weight_multiplier = 1.05  # Adds a 25% premium weight for large apartments
+    elif bhk >= 3 and sqft >= 800:
+        weight_multiplier = 1.10
+    elif bhk >= 4 and sqft >= 1200:
+        weight_multiplier = 1.25
+    elif bhk >= 5:
+        weight_multiplier = 1.40  # Adds a 40% premium weight for luxury sizes
+
+    final_price = prediction * weight_multiplier
+
+    st.success(f"🏡 Estimated House Price: ₹ {round(final_price, 2)} Lakh")
